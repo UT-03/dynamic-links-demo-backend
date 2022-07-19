@@ -4,7 +4,9 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-// const AuthRoutes = require('./routes/Auth');
+const HttpError = require('./util/HttpError');
+
+const AuthRoutes = require('./routes/Auth');
 // const UserRoutes = require('./routes/User');
 
 // Initializing express app
@@ -18,8 +20,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Routes here
-// app.use('/api/auth', AuthRoutes);
+app.use('/api/auth', AuthRoutes);
 // app.use('/api/user', UserRoutes);
+
+// Default=> If no route matches the url
+app.use((req, res, next) => {
+    const error = new HttpError('Could not find this route.', 404);
+    throw error;
+})
 
 // Handling error
 app.use((error, req, res, next) => {
