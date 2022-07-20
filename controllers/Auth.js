@@ -46,8 +46,15 @@ const signup = async (req, res, next) => {
             await newUser.save();
         }
         else {
-            // Updating the invitee
+            // Finding invitee in DB
             const invitee = await User.findById(inviteeId);
+
+            // If invitee does not exists
+            if (!invitee) {
+                throw new HttpError('This is invalid invitee Id.', 404);
+            }
+
+            // Updating the invitee
             invitee.invites.push({
                 userId: newUser._id
             })
