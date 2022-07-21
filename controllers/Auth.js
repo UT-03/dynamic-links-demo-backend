@@ -2,6 +2,7 @@ const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
+const fetch = require('node-fetch');
 
 const User = require('../models/User');
 const HttpError = require("../util/HttpError");
@@ -41,6 +42,33 @@ const signup = async (req, res, next) => {
             invites: []
         });
 
+        // Creating a new invite Link using firebase REST api
+        const response = await fetch(
+            `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${process.env.GOOGLE_API_KEY}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    dynamicLinkInfo: {
+                        domainUriPrefix: "https://dynamiclinksdemo123456.page.link",
+                        link: `https://dynamiclinksdemo123456.page.link?invitedBy=${newUser._id}`,
+                        androidInfo: {
+                            androidPackageName: "com.deeplinkdemo"
+                        },
+                    },
+                    suffix: {
+                        option: "SHORT"
+                    }
+                })
+            }
+        )
+        const inviteLinkForNewUser = (await response.json()).shortLink;
+
+        // Adding invite link in new user document
+        newUser.inviteLink = inviteLinkForNewUser;
+
         if (!inviteeId) {
             // Saving new user in DB
             await newUser.save();
@@ -79,7 +107,7 @@ const signup = async (req, res, next) => {
             .json({
                 token: token,
                 userId: newUser._id,
-                isInvited: newUser.invitee !== null ? true : false,
+                isInvited: newUser.invitee.userId !== null ? true : false,
                 hasPlayedAtLeastOneGame: false
             })
     } catch (err) {
