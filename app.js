@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const HttpError = require('./util/HttpError');
 
 const AuthRoutes = require('./routes/Auth');
-// const UserRoutes = require('./routes/User');
+const UserRoutes = require('./routes/User');
 
 // Initializing express app
 const app = express();
@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Routes here
 app.use('/api/auth', AuthRoutes);
-// app.use('/api/user', UserRoutes);
+app.use('/api/user', UserRoutes);
 
 // Default=> If no route matches the url
 app.use((req, res, next) => {
