@@ -11,7 +11,8 @@ const userSchema = new mongoose.Schema({
     invites: [{
         userId: { type: mongoose.Types.ObjectId, ref: 'User1' },
         isConfirmed: { type: Boolean, default: false }
-    }]
+    }],
+    gamesPlayed: { type: Number, default: 0 }
 });
 
 module.exports = mongoose.model('User1', userSchema);

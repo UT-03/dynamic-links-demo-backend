@@ -78,7 +78,9 @@ const signup = async (req, res, next) => {
             .status(201)
             .json({
                 token: token,
-                userId: newUser._id
+                userId: newUser._id,
+                isInvited: newUser.invitee !== null ? true : false,
+                hasPlayedAtLeastOneGame: false
             })
     } catch (err) {
         if (err instanceof HttpError)
@@ -123,7 +125,9 @@ const login = async (req, res, next) => {
             .status(200)
             .json({
                 token: token,
-                userId: existingUser._id
+                userId: existingUser._id,
+                isInvited: existingUser.invitee.userId !== null ? true : false,
+                hasPlayedAtLeastOneGame: existingUser.gamesPlayed > 0 ? true : false
             })
     } catch (err) {
         if (err instanceof HttpError)
