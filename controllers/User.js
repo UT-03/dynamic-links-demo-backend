@@ -83,10 +83,22 @@ const confirmInviteeReward = async (req, res, next) => {
             return next(new HttpError());
         }
     }
+}
 
+const getInviteLink = async (req, res, next) => {
+    const { userId } = req.userData;
+
+    const user = await User.findById(userId).select('inviteLink');
+
+    console.log(user);
+
+    res.json({
+        inviteLink: user.inviteLink
+    })
 }
 
 module.exports = {
     playGame,
-    confirmInviteeReward
+    confirmInviteeReward,
+    getInviteLink
 };
